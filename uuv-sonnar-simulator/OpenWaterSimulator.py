@@ -5,14 +5,14 @@ import manuControl as mc
 import saveData as sd
 
 #### GET SONAR CONFIG
-scenario = "OpenWater-HoveringImagingSonar" #
+scenario = "OpenWater-HoveringSonar" #
 config = holoocean.packagemanager.get_scenario(scenario)
 config = config['agents'][0]['sensors'][-1]["configuration"]
 azi = config['Azimuth']
-minR = config['RangeMin']
-maxR = config['RangeMax']
-binsR = config['RangeBins']
-binsA = config['AzimuthBins']
+minR = config['MinRange']
+maxR = config['MaxRange']
+binsR = config['BinsRange']
+binsA = config['BinsAzimuth']
 
 #### GET PLOT READY
 plt.ion()
@@ -44,11 +44,12 @@ with holoocean.make(scenario) as env:
         command = mc.parse_keys(mc.pressed_keys, mc.force)
         env.act("auv0", command)
         state = env.tick()
+        print(state.keys())
 
-        if 'ImagingSonar' in state:
+        if 'SonarSensor' in state:
             sd.save_pkl(filename, state)
             index = index + 1
-            s = state['ImagingSonar']
+            s = state['SonarSensor']
             plot.set_array(s.ravel())
 
             fig.canvas.draw()

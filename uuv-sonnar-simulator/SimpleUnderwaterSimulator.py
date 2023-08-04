@@ -5,14 +5,14 @@ import manuControl as mc
 import saveData as sd
 
 #### GET SONAR CONFIG
-scenario = "SimpleUnderwater-HoveringImagingSonar" #
+scenario = "SimpleUnderwater-HoveringSonar" #
 config = holoocean.packagemanager.get_scenario(scenario)
 config = config['agents'][0]['sensors'][-1]["configuration"]
 azi = config['Azimuth']
-minR = config['RangeMin']
-maxR = config['RangeMax']
-binsR = config['RangeBins']
-binsA = config['AzimuthBins']
+minR = config['MinRange']
+maxR = config['MaxRange']
+binsR = config['BinsRange']
+binsA = config['BinsAzimuth']
 
 #### GET PLOT READY
 plt.ion()
@@ -40,14 +40,14 @@ with holoocean.make(scenario) as env:
     while True:
         if 'q' in mc.pressed_keys: # 退出仿真系统
             break
-        filename = './Data/SimpleUnderwater/{}.pkl'.format(index) # 跑不同的仿真环境把数据存储到不同的地方
+        filename = './Data/SimpleUnderwater/Data/{}.pkl'.format(index) # 跑不同的仿真环境把数据存储到不同的地方
         command = mc.parse_keys(mc.pressed_keys, mc.force)
         env.act("auv0", command)
         state = env.tick()
         sd.save_pkl(filename,state)
 
-        if 'ImagingSonar' in state:
-            s = state['ImagingSonar']
+        if 'SonarSensor' in state:
+            s = state['SonarSensor']
             plot.set_array(s.ravel())
 
             fig.canvas.draw()
